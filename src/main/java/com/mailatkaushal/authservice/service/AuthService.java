@@ -18,6 +18,8 @@ import com.mailatkaushal.authservice.entity.UserRole;
 import com.mailatkaushal.authservice.enums.Role;
 import com.mailatkaushal.authservice.exception.TokenReuseException;
 import com.mailatkaushal.authservice.exception.UsernameAlreadyExistsException;
+import com.mailatkaushal.authservice.kafka.event.UserCreatedEvent;
+import com.mailatkaushal.authservice.kafka.producer.UserEventProducer;
 import com.mailatkaushal.authservice.repository.RefreshTokenRepository;
 import com.mailatkaushal.authservice.repository.UserRepository;
 import com.mailatkaushal.authservice.repository.UserRoleRepository;
@@ -36,6 +38,7 @@ public class AuthService {
     private final RefreshTokenService refreshTokenService;
     private final AuthenticationManager authenticationManager;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final UserEventProducer userEventProducer;
 
     @Transactional 
     public AuthTokenPair signup(CreateUserRequest request) {
@@ -53,6 +56,10 @@ public class AuthService {
                 .build();
 
         user=userRepository.save(user);
+
+        userEventProducer.publishUserCreated(
+            new UserCreatedEvent(user.getId(),user.getUsername())
+        );
 
         return createAuthTokenPair(user);
     }
