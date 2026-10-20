@@ -2,7 +2,7 @@ spring:
   application:
     name: authservice
   config:
-    import: optional:file:secrets.properties
+    import: optional:file:.env[.properties]
   datasource:
     url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:authdb}
     username: ${DB_USERNAME:postgres}
