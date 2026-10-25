@@ -23,6 +23,11 @@ import lombok.RequiredArgsConstructor;
 public class GlobalExceptionHandler {
     private final CookieService cookieService;
 
+    @ExceptionHandler(Exception.class)
+    public ProblemDetail handleException(Exception ex) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,"Something went wrong");
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ProblemDetail> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
         ProblemDetail problemDetail=ex.getBody();
